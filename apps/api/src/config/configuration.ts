@@ -22,8 +22,8 @@ export default (): AppConfig => ({
   port: parseInt(process.env.PORT || '3001', 10),
   environment: process.env.NODE_ENV || 'development',
   database: {
-    uri: process.env.MONGODB_URI || 'mongodb://localhost:27017',
-    dbName: process.env.MONGODB_DB_NAME || 'invitation_platform',
+    uri: process.env.MONGODB_URI || 'mongodb+srv://mangekyounihilist_db_user:bUa4pkMluXjQCf6e@cluster0.1fmdknn.mongodb.net/?appName=Cluster0',
+    dbName: process.env.MONGODB_DB_NAME || 'invity-db-dev',
   },
   auth: {
     secret: process.env.AUTH_SECRET || 'dev_secret',

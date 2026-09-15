@@ -28,20 +28,16 @@ invitation-platform/
 pnpm install
 ```
 
-### 2. Start local MongoDB
-```bash
-docker compose up -d
-```
-
-### 3. Configure environment
+### 2. Configure environment
 ```bash
 cp .env.example apps/api/.env
 ```
 
-### 4. Run all apps in dev mode
+### 3. Run all apps in dev mode
 ```bash
 pnpm dev
 ```
+*(This will automatically start the MongoDB Docker infrastructure and then the Turbo dev server).*
 
 | Service | URL |
 |---------|-----|
@@ -74,6 +70,27 @@ pnpm dev
 - **Storage**: Cloudflare R2 for binary assets (photos, videos, OG images)
 - **Auth**: External provider (Supabase / Firebase) — backend validates JWT, extracts `userId`
 - **Caching**: Cloudflare CDN edge caching for public invitation pages
+
+### Local Development Setup
+
+                  pnpm dev
+                     │
+                   Turbo
+                ┌────┴────┐
+                ▼         ▼
+            Next.js     NestJS
+            :3000       :3001
+                           │
+                           │ MongoDB connection
+                           ▼
+                    Docker Compose
+                           │
+                           ▼
+                       MongoDB
+                        :27017
+
+Turbo manages your application processes, while Docker Compose runs your infrastructure.
+Later we can add Redis, MinIO, Mailpit, etc. to Compose without changing this basic architecture.
 
 ## Implementation Phases
 
