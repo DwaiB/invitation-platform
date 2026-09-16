@@ -37,12 +37,12 @@ export default function HomePage() {
 
           <nav className="flex items-center gap-4">
             <Link
-              href="/dashboard"
+              href="/auth/login"
               className="text-sm font-medium text-neutral-300 hover:text-white transition-colors"
             >
-              Creator Dashboard
+              Sign in
             </Link>
-            <Link href="/dashboard">
+            <Link href="/auth/signup">
               <Button variant="gold" size="sm">
                 Get Started
               </Button>

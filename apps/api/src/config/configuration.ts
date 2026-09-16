@@ -1,39 +1,37 @@
 export interface AppConfig {
   port: number;
   environment: string;
+  allowedOrigins: string[];
+  webUrl: string;
   database: {
     uri: string;
     dbName: string;
   };
-  auth: {
-    secret: string;
-    issuer?: string;
-  };
-  r2: {
-    accountId?: string;
-    accessKeyId?: string;
-    secretAccessKey?: string;
-    bucketName?: string;
-    publicUrl?: string;
+  supabase: {
+    url: string;
+    secretKey: string;
+    jwksUrl?: string;
   };
 }
 
 export default (): AppConfig => ({
   port: parseInt(process.env.PORT || '3001', 10),
   environment: process.env.NODE_ENV || 'development',
+  allowedOrigins: (process.env.ALLOWED_ORIGINS || 'http://localhost:3000')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+  webUrl: process.env.WEB_URL || 'http://localhost:3000',
   database: {
-    uri: process.env.MONGODB_URI || 'mongodb+srv://mangekyounihilist_db_user:bUa4pkMluXjQCf6e@cluster0.1fmdknn.mongodb.net/?appName=Cluster0',
+    uri: process.env.MONGODB_URI || '',
     dbName: process.env.MONGODB_DB_NAME || 'invity-db-dev',
   },
-  auth: {
-    secret: process.env.AUTH_SECRET || 'dev_secret',
-    issuer: process.env.AUTH_ISSUER,
-  },
-  r2: {
-    accountId: process.env.R2_ACCOUNT_ID,
-    accessKeyId: process.env.R2_ACCESS_KEY_ID,
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-    bucketName: process.env.R2_BUCKET_NAME || 'invitation-assets',
-    publicUrl: process.env.R2_PUBLIC_URL,
+  supabase: {
+    url: process.env.SUPABASE_URL || '',
+    secretKey:
+      process.env.SUPABASE_SECRET_KEY ||
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      '',
+    jwksUrl: process.env.SUPABASE_JWKS_URL,
   },
 });

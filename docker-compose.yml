@@ -6,7 +6,9 @@ services:
     ports:
       - '27017:27017'
     environment:
-      MONGO_INITDB_DATABASE: invitation_platform
+      MONGO_INITDB_ROOT_USERNAME: mangekyounihilist_db_user
+      MONGO_INITDB_ROOT_PASSWORD: bUa4pkMluXjQCf6e
+      MONGO_INITDB_DATABASE: invity-db-dev
     volumes:
       - mongodb_data:/data/db
 

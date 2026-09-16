@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module.js';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
@@ -10,15 +10,19 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }));
+
   // Global API prefix — all routes under /api/v1
   app.setGlobalPrefix('api/v1');
 
   // CORS — allow Next.js frontend origins
+  const configService = app.get(ConfigService);
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      ...(process.env.ALLOWED_ORIGINS?.split(',') ?? []),
-    ],
+    origin: configService.get<string[]>('allowedOrigins', ['http://localhost:3000']),
     credentials: true,
   });
 
@@ -28,7 +32,6 @@ async function bootstrap() {
   // Global response transformer — wraps all data in { success: true, data }
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  const configService = app.get(ConfigService);
   const port = configService.get<number>('port') ?? 3001;
 
   await app.listen(port);
