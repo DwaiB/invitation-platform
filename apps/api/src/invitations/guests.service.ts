@@ -35,7 +35,11 @@ export class GuestsService {
 
   private async resolveGroup(ownerId: Types.ObjectId, invitationId: string, groupId?: string | null) {
     if (!groupId) return null;
-    const group = await this.groupModel.findOne({ _id: groupId, ownerId, invitationId }).exec();
+    const group = await this.groupModel.findOne({
+      _id: groupId,
+      ownerId,
+      invitationId: new Types.ObjectId(invitationId),
+    }).exec();
     if (!group) throw new BadRequestException('Guest group does not belong to this invitation');
     return group._id;
   }
@@ -48,13 +52,13 @@ export class GuestsService {
 
   findAll(ownerId: Types.ObjectId, invitationId: string) {
     return this.invitations.findOne(ownerId, invitationId).then(() =>
-      this.model.find({ invitationId }).sort({ createdAt: -1 }).exec(),
+      this.model.find({ invitationId: new Types.ObjectId(invitationId) }).sort({ createdAt: -1 }).exec(),
     );
   }
 
   async findOne(ownerId: Types.ObjectId, invitationId: string, id: string) {
     await this.invitations.findOne(ownerId, invitationId);
-    const guest = await this.model.findOne({ _id: id, invitationId }).exec();
+    const guest = await this.model.findOne({ _id: id, invitationId: new Types.ObjectId(invitationId) }).exec();
     if (!guest) throw new NotFoundException('Guest not found');
     return guest;
   }
@@ -66,7 +70,7 @@ export class GuestsService {
       ? changes
       : { ...changes, groupId: await this.resolveGroup(ownerId, invitationId, requestedGroupId) };
     const guest = await this.model.findOneAndUpdate(
-      { _id: id, invitationId }, update, { returnDocument: 'after' },
+      { _id: id, invitationId: new Types.ObjectId(invitationId) }, update, { returnDocument: 'after' },
     ).exec();
     if (!guest) throw new NotFoundException('Guest not found');
     return guest;
@@ -74,7 +78,7 @@ export class GuestsService {
 
   async remove(ownerId: Types.ObjectId, invitationId: string, id: string) {
     await this.invitations.findOne(ownerId, invitationId);
-    const guest = await this.model.findOneAndDelete({ _id: id, invitationId }).exec();
+    const guest = await this.model.findOneAndDelete({ _id: id, invitationId: new Types.ObjectId(invitationId) }).exec();
     if (!guest) throw new NotFoundException('Guest not found');
     return { deleted: true };
   }
